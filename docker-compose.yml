@@ -1,0 +1,20 @@
+services:
+  auth:
+    build:
+      context: ..
+      dockerfile: ForesightX-auth/Dockerfile
+    container_name: foresightx-auth
+    env_file:
+      - .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8004:8004"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: foresightx-auth-redis
+    ports:
+      - "6379:6379"

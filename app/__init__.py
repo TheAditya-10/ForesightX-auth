@@ -1,0 +1,1 @@
+"""ForesightX auth service package."""
