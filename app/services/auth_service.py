@@ -48,7 +48,16 @@ class AuthService:
         await self.session.commit()
         await self.session.refresh(user)
 
-        created_profile = await self.profile_client.create_profile(user_id=str(user.id), email=user.email)
+        created_profile = await self.profile_client.create_profile(
+            user_id=str(user.id),
+            email=user.email,
+            name=payload.name,
+            phone=payload.phone,
+            pan=payload.pan,
+            city=payload.city,
+            photo=payload.photo,
+            risk_level=payload.risk_level,
+        )
         if not created_profile:
             self.logger.warning("User registered but profile bootstrap failed", extra={"user_id": str(user.id)})
 
