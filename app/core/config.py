@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8004
 
-    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/foresightx_auth"
+    database_url: str = "postgresql://postgres:postgres@localhost:5432/foresightx_auth"
     redis_url: str = "redis://localhost:6379/0"
 
     jwt_secret: str = "change-me"

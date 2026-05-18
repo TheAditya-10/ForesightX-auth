@@ -39,7 +39,7 @@ This service is independently configured from `ForesightX-auth/.env`.
 Copy `.env.example` to `.env` and set real values:
 
 ```env
-DATABASE_URL=postgresql+asyncpg://user:password@host:5432/foresightx_auth
+DATABASE_URL=postgresql://user:password@host:5432/foresightx_auth
 REDIS_URL=redis://localhost:6379/0
 JWT_SECRET=replace-with-a-long-random-secret
 ACCESS_TOKEN_EXPIRE_MINUTES=15
