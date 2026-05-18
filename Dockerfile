@@ -1,4 +1,19 @@
-FROM python:3.12-slim
+FROM python:3.12-slim AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=1
+
+WORKDIR /build
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY ForesightX-auth/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+
+FROM python:3.12-slim AS runner
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -6,10 +21,7 @@ ENV PIP_NO_CACHE_DIR=1
 
 WORKDIR /app/ForesightX-auth
 
-COPY ForesightX-auth/requirements.txt ./requirements.txt
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
-
+COPY --from=builder /install /usr/local
 COPY ForesightX-auth /app/ForesightX-auth
 
 RUN useradd --create-home --shell /usr/sbin/nologin appuser && \
