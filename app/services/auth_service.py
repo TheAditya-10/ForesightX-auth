@@ -138,6 +138,14 @@ class AuthService:
         email = str(userinfo.get("email", "")).lower()
         google_subject = str(userinfo.get("sub", ""))
         is_verified = bool(userinfo.get("email_verified"))
+        name = str(userinfo.get("name") or "").strip()
+        if not name:
+            given_name = str(userinfo.get("given_name") or "").strip()
+            family_name = str(userinfo.get("family_name") or "").strip()
+            name = " ".join(part for part in [given_name, family_name] if part).strip()
+        name = name or None
+        photo = str(userinfo.get("picture") or "").strip() or None
+        phone = str(userinfo.get("phone_number") or "").strip() or None
 
         if not email or not google_subject:
             raise HTTPException(
@@ -157,15 +165,21 @@ class AuthService:
             self.session.add(user)
             await self.session.commit()
             await self.session.refresh(user)
-
-            created_profile = await self.profile_client.create_profile(user_id=str(user.id), email=user.email)
-            if not created_profile:
-                self.logger.warning("OAuth user registered but profile bootstrap failed", extra={"user_id": str(user.id)})
         else:
             user.google_subject = google_subject
             if is_verified:
                 user.is_verified = True
             await self.session.commit()
+
+        created_profile = await self.profile_client.create_profile(
+            user_id=str(user.id),
+            email=user.email,
+            name=name,
+            phone=phone,
+            photo=photo,
+        )
+        if not created_profile:
+            self.logger.warning("OAuth user profile sync failed", extra={"user_id": str(user.id)})
 
         tokens = await self.token_service.issue_token_pair(
             user_id=str(user.id),
